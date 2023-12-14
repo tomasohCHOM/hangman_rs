@@ -1,6 +1,7 @@
 struct GameData {
     answer: String,
     guesses: Vec<String>,
+    hidden: String,
     lives: u8,
 }
 
@@ -9,6 +10,7 @@ fn main() {
     let mut game_data: GameData = GameData {
         answer: String::new(),
         guesses: vec![],
+        hidden: String::new(),
         lives: 6,
     };
 
@@ -18,9 +20,26 @@ fn main() {
         println!("{}", guess);
     }
 
-    println!("{}", game_data.lives);
+    play_game(&game_data);
+
     display_hangman(&game_data);
     display_incorrect_guesses(&game_data);
+}
+
+fn play_game(game_data: &GameData) {
+    reveal_location(game_data, &'?');
+    display_hangman(game_data);
+    while true {}
+}
+
+fn reveal_location(game_data: &GameData, letter_guess: &char) {
+    for answer_char in game_data.answer.chars() {
+        if answer_char == *letter_guess {
+            game_data
+                .hidden
+                .replace(answer_char, &letter_guess.to_string());
+        }
+    }
 }
 
 fn display_incorrect_guesses(game_data: &GameData) {
