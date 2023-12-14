@@ -8,7 +8,7 @@ struct GameData {
 fn main() {
     display_init_message();
     let mut game_data: GameData = GameData {
-        answer: String::new(),
+        answer: String::from("hello"),
         guesses: vec![],
         hidden: String::new(),
         lives: 6,
@@ -16,20 +16,32 @@ fn main() {
 
     game_data.guesses.push(String::from("a"));
 
-    for guess in game_data.guesses.clone() {
-        println!("{}", guess);
-    }
-
     play_game(&game_data);
-
-    display_hangman(&game_data);
-    display_incorrect_guesses(&game_data);
 }
 
 fn play_game(game_data: &GameData) {
     reveal_location(game_data, &'?');
     display_hangman(game_data);
-    while true {}
+
+    while game_data.lives > 0 && game_data.answer != game_data.hidden {
+        println!("Enter your guess (must be a letter):");
+        let mut input = String::new();
+        std::io::stdin()
+            .read_line(&mut input)
+            .ok()
+            .expect("Failed to read line");
+
+        println!("The character is {}", input);
+        println!("The length of the character is {}", input.len());
+
+        if input.len() != 1 {
+            println!("Invalid, input must be a letter!");
+            continue;
+        }
+
+        let letter = input.chars().nth(0).expect("No character read");
+        println!("Read this character {}", letter);
+    }
 }
 
 fn reveal_location(game_data: &GameData, letter_guess: &char) {
