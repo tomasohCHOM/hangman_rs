@@ -1,5 +1,5 @@
 use std::io::Write;
-
+mod dictionary;
 struct GameData {
     answer: String,
     guesses: Vec<char>,
@@ -9,10 +9,12 @@ struct GameData {
 
 fn main() {
     display_init_message();
+    let word: &String = &dictionary::get_random_word();
+
     let mut game_data: GameData = GameData {
-        answer: String::from("hello"),
+        answer: word.to_string(),
         guesses: vec![],
-        hidden: String::from("_____"),
+        hidden: String::from(std::iter::repeat("_").take(word.len()).collect::<String>()),
         lives: 6,
     };
 
