@@ -1,3 +1,5 @@
+use std::io::Write;
+
 struct GameData {
     answer: String,
     guesses: Vec<String>,
@@ -24,7 +26,8 @@ fn play_game(game_data: &GameData) {
     display_hangman(game_data);
 
     while game_data.lives > 0 && game_data.answer != game_data.hidden {
-        println!("Enter your guess (must be a letter):");
+        print!("Enter your guess (must be a letter): ");
+        let _ = std::io::stdout().flush();
         let mut input = String::new();
         std::io::stdin()
             .read_line(&mut input)
@@ -34,14 +37,27 @@ fn play_game(game_data: &GameData) {
         println!("The character is {}", input);
         println!("The length of the character is {}", input.len());
 
-        if input.len() != 1 {
+        if input.len() - 2 != 1 || !input.chars().nth(0).unwrap().is_alphabetic() {
             println!("Invalid, input must be a letter!");
             continue;
         }
 
-        let letter = input.chars().nth(0).expect("No character read");
+        let letter = input
+            .chars()
+            .nth(0)
+            .expect("No character read")
+            .to_lowercase();
         println!("Read this character {}", letter);
     }
+
+    if game_data.answer == game_data.hidden {
+        println!("Congrats! You saved the Hangman and won the game.");
+    }
+
+    println!(
+        "You lose! The Hangman was hanged. The answer was '{}'\nGG Go Next.",
+        game_data.answer
+    );
 }
 
 fn reveal_location(game_data: &GameData, letter_guess: &char) {
