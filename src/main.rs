@@ -22,8 +22,8 @@ fn main() {
 }
 
 fn play_game(game_data: &mut GameData) {
-    reveal_letter(game_data, &'?');
     display_hangman(game_data);
+    println!("The word: {}\n", game_data.hidden);
 
     while game_data.lives > 0 && game_data.answer != game_data.hidden {
         print!("Enter your guess (must be a letter): ");
