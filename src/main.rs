@@ -32,9 +32,6 @@ fn play_game(game_data: &mut GameData) {
             .ok()
             .expect("Failed to read line");
 
-        println!("The character is {}", input);
-        println!("The length of the character is {}", input.len());
-
         if input.len() - 2 != 1 || !input.chars().nth(0).unwrap().is_alphabetic() {
             println!("Invalid, input must be a letter!");
             continue;
@@ -47,9 +44,13 @@ fn play_game(game_data: &mut GameData) {
             .to_lowercase()
             .nth(0)
             .unwrap();
-        println!("Read this character {}", letter);
 
-        if game_data.answer.find(letter).is_some() {
+        // Check whether the letter was already guessed
+        if game_data.hidden.find(letter).is_some() || game_data.guesses.contains(&letter) {
+            println!("The letter has already been guessed. Try again.");
+        }
+        // See if the letter is part of the answer or not
+        else if game_data.answer.find(letter).is_some() {
             reveal_letter(game_data, &letter);
         } else {
             game_data.lives -= 1;
@@ -59,6 +60,7 @@ fn play_game(game_data: &mut GameData) {
 
         display_hangman(game_data);
         display_incorrect_guesses(game_data);
+        println!("The word: {}\n", game_data.hidden);
     }
 
     if game_data.answer == game_data.hidden {
@@ -73,11 +75,11 @@ fn play_game(game_data: &mut GameData) {
 }
 
 fn reveal_letter(game_data: &mut GameData, letter_guess: &char) {
-    for answer_char in game_data.answer.chars() {
+    for (index, answer_char) in game_data.answer.chars().enumerate() {
         if answer_char == *letter_guess {
-            game_data.hidden = game_data
+            game_data
                 .hidden
-                .replace(answer_char, &letter_guess.to_string());
+                .replace_range(index..index + 1, &letter_guess.to_string());
         }
     }
 }
@@ -93,7 +95,7 @@ fn display_incorrect_guesses(game_data: &GameData) {
         output.push_str(", ");
     }
     output.push_str("]");
-    println!("{}", output);
+    println!("Incorrect guesses: {}", output);
 }
 
 fn display_init_message() {
@@ -112,7 +114,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|   /|\\");
             println!("|   / \\");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
 
         1 => {
@@ -122,7 +124,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|   /|\\");
             println!("|   /");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
 
         2 => {
@@ -132,7 +134,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|   /|\\");
             println!("|");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
 
         3 => {
@@ -142,7 +144,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|   /|");
             println!("|");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
 
         4 => {
@@ -152,7 +154,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|    |");
             println!("|");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
 
         5 => {
@@ -162,7 +164,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|");
             println!("|");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
 
         _ => {
@@ -172,7 +174,7 @@ fn display_hangman(game_data: &GameData) {
             println!("|");
             println!("|");
             println!("|");
-            println!("I")
+            println!("I\n")
         }
     }
 }
