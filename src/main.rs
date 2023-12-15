@@ -2,7 +2,7 @@ use std::io::Write;
 
 struct GameData {
     answer: String,
-    guesses: Vec<String>,
+    guesses: Vec<char>,
     hidden: String,
     lives: u8,
 }
@@ -12,17 +12,15 @@ fn main() {
     let mut game_data: GameData = GameData {
         answer: String::from("hello"),
         guesses: vec![],
-        hidden: String::new(),
+        hidden: String::from("_____"),
         lives: 6,
     };
 
-    game_data.guesses.push(String::from("a"));
-
-    play_game(&game_data);
+    play_game(&mut game_data);
 }
 
-fn play_game(game_data: &GameData) {
-    reveal_location(game_data, &'?');
+fn play_game(game_data: &mut GameData) {
+    reveal_letter(game_data, &'?');
     display_hangman(game_data);
 
     while game_data.lives > 0 && game_data.answer != game_data.hidden {
@@ -46,12 +44,26 @@ fn play_game(game_data: &GameData) {
             .chars()
             .nth(0)
             .expect("No character read")
-            .to_lowercase();
+            .to_lowercase()
+            .nth(0)
+            .unwrap();
         println!("Read this character {}", letter);
+
+        if game_data.answer.find(letter).is_some() {
+            reveal_letter(game_data, &letter);
+        } else {
+            game_data.lives -= 1;
+            game_data.guesses.push(letter);
+            println!("That's incorrect! A part has been added to the Hangman's body.");
+        }
+
+        display_hangman(game_data);
+        display_incorrect_guesses(game_data);
     }
 
     if game_data.answer == game_data.hidden {
         println!("Congrats! You saved the Hangman and won the game.");
+        return;
     }
 
     println!(
@@ -60,10 +72,10 @@ fn play_game(game_data: &GameData) {
     );
 }
 
-fn reveal_location(game_data: &GameData, letter_guess: &char) {
+fn reveal_letter(game_data: &mut GameData, letter_guess: &char) {
     for answer_char in game_data.answer.chars() {
         if answer_char == *letter_guess {
-            game_data
+            game_data.hidden = game_data
                 .hidden
                 .replace(answer_char, &letter_guess.to_string());
         }
@@ -72,8 +84,13 @@ fn reveal_location(game_data: &GameData, letter_guess: &char) {
 
 fn display_incorrect_guesses(game_data: &GameData) {
     let mut output: String = String::from("[");
-    for guess in game_data.guesses.clone() {
-        output.push_str(&guess);
+
+    for (index, itr) in game_data.guesses.iter().enumerate() {
+        output.push(*itr);
+        if index == game_data.guesses.len() - 1 {
+            continue;
+        }
+        output.push_str(", ");
     }
     output.push_str("]");
     println!("{}", output);
@@ -91,9 +108,9 @@ fn display_hangman(game_data: &GameData) {
         0 => {
             println!(".____.");
             println!("|    |");
-            println!("|");
-            println!("|");
-            println!("|");
+            println!("|    O");
+            println!("|   /|\\");
+            println!("|   / \\");
             println!("|");
             println!("I")
         }
@@ -101,9 +118,9 @@ fn display_hangman(game_data: &GameData) {
         1 => {
             println!(".____.");
             println!("|    |");
-            println!("|");
-            println!("|");
-            println!("|");
+            println!("|    O");
+            println!("|   /|\\");
+            println!("|   /");
             println!("|");
             println!("I")
         }
@@ -111,8 +128,8 @@ fn display_hangman(game_data: &GameData) {
         2 => {
             println!(".____.");
             println!("|    |");
-            println!("|");
-            println!("|");
+            println!("|    O");
+            println!("|   /|\\");
             println!("|");
             println!("|");
             println!("I")
@@ -121,8 +138,8 @@ fn display_hangman(game_data: &GameData) {
         3 => {
             println!(".____.");
             println!("|    |");
-            println!("|");
-            println!("|");
+            println!("|    O");
+            println!("|   /|");
             println!("|");
             println!("|");
             println!("I")
@@ -131,8 +148,8 @@ fn display_hangman(game_data: &GameData) {
         4 => {
             println!(".____.");
             println!("|    |");
-            println!("|");
-            println!("|");
+            println!("|    O");
+            println!("|    |");
             println!("|");
             println!("|");
             println!("I")
@@ -141,7 +158,7 @@ fn display_hangman(game_data: &GameData) {
         5 => {
             println!(".____.");
             println!("|    |");
-            println!("|");
+            println!("|    O");
             println!("|");
             println!("|");
             println!("|");
