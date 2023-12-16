@@ -9,8 +9,7 @@ use std::{
 const FILENAME: &str = "words/words.txt";
 
 pub fn get_random_word() -> String {
-    let f = File::open(FILENAME)
-        .unwrap_or_else(|e| panic!("(;_;) file not found: {}: {}", FILENAME, e));
+    let f = File::open(FILENAME).unwrap_or_else(|e| panic!("File not found: {}: {}", FILENAME, e));
     let f = BufReader::new(f);
     let lines = f.lines().map(|l| l.expect("Couldn't read line"));
     return lines

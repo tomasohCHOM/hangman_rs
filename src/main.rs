@@ -9,16 +9,32 @@ struct GameData {
 
 fn main() {
     display_init_message();
-    let word: &String = &dictionary::get_random_word();
 
-    let mut game_data: GameData = GameData {
-        answer: word.to_string(),
-        guesses: vec![],
-        hidden: String::from(std::iter::repeat("_").take(word.len()).collect::<String>()),
-        lives: 6,
-    };
+    loop {
+        let word: &String = &dictionary::get_random_word();
 
-    play_game(&mut game_data);
+        let mut game_data: GameData = GameData {
+            answer: word.to_string(),
+            guesses: vec![],
+            hidden: String::from(std::iter::repeat("_").take(word.len()).collect::<String>()),
+            lives: 6,
+        };
+        play_game(&mut game_data);
+
+        print!("Wanna play again? [y/n]: ");
+        let _ = std::io::stdout().flush();
+        let mut input = String::new();
+        std::io::stdin()
+            .read_line(&mut input)
+            .ok()
+            .expect("Failed to read line");
+
+        if input.chars().nth(0).unwrap() == 'n' {
+            break;
+        }
+    }
+
+    println!("Goodbye :)");
 }
 
 fn play_game(game_data: &mut GameData) {
