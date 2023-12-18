@@ -6,10 +6,20 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-const FILENAME: &str = "words/words.txt";
+const EASIES_FILENAME: &str = "words/easies.txt";
+const MEDIUMS_FILENAME: &str = "words/mediums.txt";
+const HARDS_FILENAME: &str = "words/hards.txt";
 
-pub fn get_random_word() -> String {
-    let f = File::open(FILENAME).unwrap_or_else(|e| panic!("File not found: {}: {}", FILENAME, e));
+pub fn get_random_word(difficulty: char) -> String {
+    let file_path = match difficulty {
+        'e' => EASIES_FILENAME,
+        'm' => MEDIUMS_FILENAME,
+        'h' => HARDS_FILENAME,
+        _ => "",
+    };
+
+    let f =
+        File::open(file_path).unwrap_or_else(|e| panic!("File not found: {}: {}", file_path, e));
     let f = BufReader::new(f);
     let lines = f.lines().map(|l| l.expect("Couldn't read line"));
     return lines

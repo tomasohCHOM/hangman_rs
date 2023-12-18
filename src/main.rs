@@ -10,30 +10,33 @@ struct GameData {
 fn main() {
     display_init_message();
     loop {
-        let difficulty = String::from("123124124");
-        let mut word: &String;
+        let mut word: String = String::new();
 
-        let mut is_not_selected = true;
-        while is_not_selected {
-            word = match difficulty.chars().nth(0).unwrap() {
-                'e' => {
-                    println!("You selected to play in Easy difficulty. This should be fun!");
-                    is_not_selected = false;
-                    &dictionary::get_random_word()
-                }
-                'm' => {
-                    println!("Medium Difficulty? Noice.");
-                    is_not_selected = false;
-                    &dictionary::get_random_word()
-                }
-                'h' => {
-                    println!("Medium Difficulty? Noice.");
-                    is_not_selected = false;
-                    &dictionary::get_random_word()
+        while word.is_empty() {
+            let mut difficulty_input = String::new();
+            print!("Please select a difficulty (e/m/h): ");
+
+            let _ = std::io::stdout().flush();
+
+            std::io::stdin()
+                .read_line(&mut difficulty_input)
+                .ok()
+                .expect("Failed to read line");
+
+            let difficulty = difficulty_input
+                .chars()
+                .nth(0)
+                .unwrap()
+                .to_ascii_lowercase();
+
+            word = match difficulty {
+                'e' | 'm' | 'h' => {
+                    println!();
+                    dictionary::get_random_word(difficulty)
                 }
                 _ => {
-                    println!("Invalid input. Try again and choose an appropriate difficulty.");
-                    &String::new()
+                    println!("Invalid input, please try again!\n");
+                    String::new()
                 }
             };
         }
@@ -57,6 +60,7 @@ fn main() {
         if input.chars().nth(0).unwrap() == 'n' {
             break;
         }
+        println!();
     }
 
     println!("Goodbye :)");
