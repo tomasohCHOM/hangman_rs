@@ -9,9 +9,34 @@ struct GameData {
 
 fn main() {
     display_init_message();
-
     loop {
-        let word: &String = &dictionary::get_random_word();
+        let difficulty = String::from("123124124");
+        let mut word: &String;
+
+        let mut is_not_selected = true;
+        while is_not_selected {
+            word = match difficulty.chars().nth(0).unwrap() {
+                'e' => {
+                    println!("You selected to play in Easy difficulty. This should be fun!");
+                    is_not_selected = false;
+                    &dictionary::get_random_word()
+                }
+                'm' => {
+                    println!("Medium Difficulty? Noice.");
+                    is_not_selected = false;
+                    &dictionary::get_random_word()
+                }
+                'h' => {
+                    println!("Medium Difficulty? Noice.");
+                    is_not_selected = false;
+                    &dictionary::get_random_word()
+                }
+                _ => {
+                    println!("Invalid input. Try again and choose an appropriate difficulty.");
+                    &String::new()
+                }
+            };
+        }
 
         let mut game_data: GameData = GameData {
             answer: word.to_string(),
